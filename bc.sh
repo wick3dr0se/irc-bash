@@ -1,0 +1,79 @@
+#!/bin/bash
+
+set -eEu
+
+port="${2:-6667}"
+servername="${1:-127.0.0.1}"
+hostname="${HOSTNAME:-$hostname:-$(cat /etc/hostname)}"
+username="${USER:-$(id -un)}"
+
+_msg(){
+  printf '%s\n' "$*">&3
+}
+
+_err(){
+  printf '\e[31mError\e[m: %s\n' "$*"
+}
+
+not_enough_args(){
+  local count="$1"
+
+  (( ${#@} < count + 2 ))&&{
+    _err "Not enough args"
+    return 1
+  }
+}
+
+pass_msg(){
+  local password="$1"
+  
+  _msg "PASS $password"
+}
+
+nick_msg(){
+  declare -g nickname="${1:-$username}"
+  local hopcount="${2:-0}"
+  
+  _msg "NICK $nickname $hopcount"
+}
+
+priv_msg(){
+  local recipient="$1" msg=":${2#:}"
+
+  _msg "PRIVMSG $recipient $msg"
+}
+
+join_msg(){
+  local channel="#${1###}"
+
+  _msg "JOIN $channel"
+}
+
+exec 3<>/dev/tcp/$servername/$port|| exit 1
+
+until [[ ${password-} ]]; do
+  read -rp 'Specify a server password: ' password
+done
+
+pass_msg "$password"
+nick_msg "$username"
+_msg "USER $username $hostname $servername"
+
+for((;;)){
+  while read -ru 3 -t .1 line; do
+    case "$line" in
+      "PING $nickname") _msg "PONG";;
+      *) printf '%s\n' "$line";;
+    esac
+  done
+
+  read -ra args -t .1|| :
+  cmd="${args[0]-}" args=("${args[@]:1}")
+  
+  case "$cmd" in
+    'PASS'|'/pass') pass_msg "${args[0]-}";;
+    'NICK'|'/nick') nick_msg "${args[0]-}" "${args[1]-}";;
+    'PRIVMSG'|'/msg') priv_msg "${args[0]-}" "${args[*]:1}";;
+    'JOIN'|'/join') join_msg "${args[0]-}";;
+  esac
+}
