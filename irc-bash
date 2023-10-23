@@ -4,24 +4,11 @@ set -eEu
 
 port="${2:-6667}"
 servername="${1:-127.0.0.1}"
-hostname="${HOSTNAME:-$hostname:-$(cat /etc/hostname)}"
+hostname="${HOSTNAME:-$hostname:-$(</etc/hostname)}"
 username="${USER:-$(id -un)}"
 
 _msg(){
   printf '%s\n' "$*">&3
-}
-
-_err(){
-  printf '\e[31mError\e[m: %s\n' "$*"
-}
-
-not_enough_args(){
-  local count="$1"
-
-  (( ${#@} < count + 2 ))&&{
-    _err "Not enough args"
-    return 1
-  }
 }
 
 pass_msg(){
