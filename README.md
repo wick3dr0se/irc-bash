@@ -20,15 +20,15 @@ git clone https://github.com/wick3dr0se/irc-bash; cd irc-bash/
 ---
 
 ## Execution
-Execute client from within downloaded directory
+Execute client from within downloaded directory, optionally specifying an IP address and/or port to connect to. If IP is not specified, port becomes first argument 
 ```bash
-bash irc-bash
+bash irc-bash [ip] [port]
 ```
 
 Or
 ```bash
 chomod u+x irc-bash
-./irc-bash
+./irc-bash [port]
 ```
 
 ## Usage
