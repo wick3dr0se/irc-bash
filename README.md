@@ -34,11 +34,12 @@ chomod u+x irc-bash
 ## Usage
 The client request password first, parses environment variables to determine nickname, username and hostname automatically
 
-```bash
-/pass, PASS  ...  Update server password
-/nick, NICK  ...  Update server nickname
-/join, JOIN  ...  Join server channel(s)
-/msg, PRIVMSG  ...  Message a nickname or channel
+```
+/pass, PASS <password?  ...  Update server passwor
+/nick, NICK  <nickname? ...  Update server nickname
+/join, JOIN  <#channel,#channel2> ...  Join server channel(s)
+/msg, PRIVMSG [nickname] <message>  ...  Message a nickname
+/msg, PRIVMSG [#channel] <message>  ...  Message a channel
 ```
 
 ## Contributing
